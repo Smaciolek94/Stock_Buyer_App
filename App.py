@@ -3,11 +3,11 @@ import ImpExp as ie
 import pandas as pd
 import os
 
-path = "shares.csv"
+path = input("name of information file: ")
 
-shares = ie.importer(path)
-symbols = ["SCHB","SCHZ","SCHP","SCHF","SCHE","SCHH"]
-allocation = [.35,.25,.05,.15,.10,.10]
+symbols = ie.importer(path,"symbol")
+allocation = ie.importer(path,"alc")
+shares = ie.importer(path,"shares")
 
 myApp = sa.Stocks(symbols,shares,allocation)
 
@@ -63,6 +63,6 @@ if bs == "s":
     print("calculating.....")
     myApp.seller(takeout,cash)
     
-ie.exporter(path,myApp.shares)
-
-k=input("press any key to exit") 
+export= input("Do you wish to export the new number of shares (y)?")
+if export == "y":
+    ie.exporter(path,myApp.symbols,myApp.alc,myApp.shares)
