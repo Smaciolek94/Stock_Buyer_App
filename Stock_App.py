@@ -1,11 +1,12 @@
-from bs4 import BeautifulSoup
-from urllib.request import urlopen as uReq
+#from bs4 import BeautifulSoup
+#from urllib.request import urlopen as uReq
+import yfinance as yf
 import pandas as pd
 import sys
 
 class Stocks:
     """
-    Symbols: The symbol of the share to look up
+    symbols: The symbol of the share to look up
     Shares: The number of shares already in the account
     Alc: The decimal desired allocation
     """
@@ -40,22 +41,28 @@ class Stocks:
         if cash < 0:
             raise Exception("Cash must be a positive number")
             
-        URLS = []
-        for i in range(0,len(self.symbols)):
-            url = "https://finance.yahoo.com/quote/" + self.symbols[i]
-            URLS.append(url)
+        #URLS = []
+        #for i in range(0,len(self.symbols)):
+        #    url = "https://finance.yahoo.com/quote/" + self.symbols[i]
+        #    URLS.append(url)
         
         prices = []
-        for i in range(0,len(URLS)): #in python the last element is exclusive
-            uClient = uReq(URLS[i])
-            html = uClient.read()
-            uClient.close()
-            stocksoup = BeautifulSoup(html,'html.parser')
-            price = stocksoup.find("div",{"class":"My(6px) Pos(r) smartphone_Mt(6px)"})
-            price = price.span.text
-            price = float(price)
-            prices.append(price)
-            
+        #for i in range(0,len(URLS)): #in python the last element is exclusive
+        #    uClient = uReq(URLS[i])
+        #    html = uClient.read()
+        #    uClient.close()
+        #    stocksoup = BeautifulSoup(html,'html.parser')
+        #    price = stocksoup.find("div",{"class":"My(6px) Pos(r) smartphone_Mt(6px)"})
+        #    price = price.span.text
+        #    price = float(price)
+        #    prices.append(price)
+        for i in range(0,len(self.symbols)):
+            name = yf.Ticker(self.symbols[i])
+            name = name.history()
+            name = last_quote = (name.tail(1)['Close'].iloc[0])
+            name = float(name)
+            prices.append(name)
+        
         total = []
         for i in range(0,len(prices)):
             totprice = self.shares[i]*prices[i]
@@ -66,14 +73,16 @@ class Stocks:
             
         grandtot = sum(total) + cash
         
-        aloc = []
+        #aloc = []
         counter = []
         for i in range(0,len(prices)):
-            aloc.append([])
+            #aloc[i].append([])
             counter.append([])
             counter[i] = 0
-            aloc[i] = total[i] / grandtot
-            while aloc[i] < self.alc[i]:
+            #aloc[i] = total[i] / grandtot
+            aloc = total[i] / grandtot
+            #while aloc[i] < self.alc[i]:
+            while aloc < self.alc[i]:
                 if cash < prices[i]:
                     break
                 else:
@@ -81,7 +90,8 @@ class Stocks:
                     total[i] = self.shares[i] * prices[i]  
                     cash = cash - prices[i]
                     counter[i] = counter[i] + 1
-                    aloc[i] = total[i] / grandtot
+                    #aloc[i] = total[i] / grandtot
+                    aloc = total[i] / grandtot
         if update == False:
             for i in range(0,len(counter)):
                 self.shares[i] = self.shares[i] - counter[i]
@@ -106,26 +116,32 @@ class Stocks:
         if cash < 0:
             raise Exception("Cash must be a positive number")
             
-        URLS = []
-        for i in range(0,len(self.symbols)):
-            url = "https://finance.yahoo.com/quote/" + self.symbols[i]
-            URLS.append(url)
+        #URLS = []
+        #for i in range(0,len(self.symbols)):
+        #    url = "https://finance.yahoo.com/quote/" + self.symbols[i]
+        #    URLS.append(url)
             
         prices = []
-        for i in range(0,len(URLS)): #in python the last element is exclusive
-            uClient = uReq(URLS[i])
-            html = uClient.read()
-            uClient.close()
-            stocksoup = BeautifulSoup(html,'html.parser')
-            price = stocksoup.find("div",{"class":"My(6px) Pos(r) smartphone_Mt(6px)"})
-            price = price.span.text
-            price = float(price)
-            prices.append(price)
+        #for i in range(0,len(URLS)): #in python the last element is exclusive
+        #    uClient = uReq(URLS[i])
+        #    html = uClient.read()
+        #    uClient.close()
+        #    stocksoup = BeautifulSoup(html,'html.parser')
+        #    price = stocksoup.find("div",{"class":"My(6px) Pos(r) smartphone_Mt(6px)"})
+        #    price = price.span.text
+        #    price = float(price)
+        #    prices.append(price)
+        for i in range(0,len(self.symbols)):
+            name = yf.Ticker(self.symbols[i])
+            name = name.history()
+            name = last_quote = (name.tail(1)['Close'].iloc[0])
+            name = float(name)
+            prices.append(name)
  
         takeout = takeoutinput - cash
 
         total = []
-        for i in range(0,len(URLS)):
+        for i in range(0,len(self.symbols)):
             totprice = self.shares[i]*prices[i]
             total.append(totprice)
     

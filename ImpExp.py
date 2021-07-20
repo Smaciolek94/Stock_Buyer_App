@@ -12,7 +12,7 @@ def importer(path, which):
         allocation = list(pd.read_csv(path)["allocation"])
         return allocation
     if which == "shares":
-        shares = round(pd.read_csv(path)["shares"])
+        shares = list(pd.read_csv(path)["shares"])
         return shares
 #symbol = importer(path,"symbol")
 #alc = importer(path,"alc")
